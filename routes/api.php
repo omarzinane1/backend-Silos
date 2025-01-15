@@ -1,0 +1,31 @@
+<?php
+
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\SidebarController;
+use App\Http\Controllers\SiloController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+
+Route::get('/silos', [SiloController::class, 'index']);
+Route::post('/store', [SiloController::class, 'store']);
+Route::get('/search', [SiloController::class, 'search']);
+Route::put('/silos/{id}', [SiloController::class, 'update']);
+Route::delete('/silos/{id}', [SiloController::class, 'destroy']);
+Route::get('/ExporterDATA',[SiloController::class,'ExporterDATA']);
+Route::get('/exportPDF',[SiloController::class,'exportPDF']);
