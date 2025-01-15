@@ -3,7 +3,7 @@
 <html lang="fr">
 
 <head>
-    <title>Rapport des Chèques</title>
+    <title>Rapport des Silos</title>
     <style>
         /* Ajoutez des styles CSS si nécessaire */
         table {
@@ -27,8 +27,8 @@
 
 <body>
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div style="text-align: center; border-radius: 50px;"><img src="images/radeejicon.png" style="width: 40%;" alt="RADEEJ"></div>
-        <div style="border: black solid 1px; padding: 10px; text-align: center;margin-top: 3px;"><h3>Régie Autonome Intercommunale de Distribution d’Eau, d’Électricité et de gestion d’Assainissement liquide des Provinces d’El Jadida et de Sidi Bennour</h3></div>
+        <div style="text-align: center; border-radius: 50px;"><img src="images/radeejicon.png" style="width: 40%;" alt="AKSAM"></div>
+        <div style="border: black solid 1px; padding: 10px; text-align: center;margin-top: 3px;"><h3>SUIVI DES FREINTES PREMELANGES</h3></div>
 
     </div>
     <h3 style="text-align: center;">Rapport des Silos du {{ $silos->first()->datevalidation }} au  {{ $silos->last()->datevalidation }} </h3>

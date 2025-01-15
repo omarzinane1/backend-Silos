@@ -30,11 +30,11 @@ class SiloController extends Controller
             'stocki' => 'required|numeric',
             'entre' => 'required|numeric',
             'consumation' => 'required|numeric',
-            'stockf' => 'required|numeric',
             'statut' => 'required|string|max:255',
         ]);
-
+        $validatedData['stockf'] = $request->input('stockf', ($validatedData['stocki'] + $validatedData['entre']) - $validatedData['consumation']);
         $validatedData['datevalidation'] = $request->input('datevalidation', now());
+
         // Création de silo
         $silo = Silo::create($validatedData);
 
@@ -153,13 +153,12 @@ class SiloController extends Controller
     //Méthode pour export PDF
     public function exportPDF(Request $request)
     {
-        $startDate = $request->query('date_reception');
-        $endDate = $request->query('date_validation');
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
 
         $parameters = [];
         $sql = '';
-        $startDate = $request->query('startDate'); // Assurez-vous que les clés correspondent
-        $endDate = $request->query('endDate');
+
 
         $parameters = [];
         $sql = '';
