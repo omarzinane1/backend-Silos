@@ -26,6 +26,8 @@ Route::get('/silos', [SiloController::class, 'index']);
 Route::post('/store', [SiloController::class, 'store']);
 Route::get('/search', [SiloController::class, 'search']);
 Route::put('/silos/{id}', [SiloController::class, 'update']);
+Route::delete('/deleteSilo/{id}', [SiloController::class, 'deleteSilo']);
 Route::delete('/silos/{id}', [SiloController::class, 'destroy']);
+Route::get('/filter', [SiloController::class, 'getFilteredData']);
 Route::get('/ExporterDATA',[SiloController::class,'ExporterDATA']);
 Route::get('/exportPDF',[SiloController::class,'exportPDF']);

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->float('entre');
             $table->float('consumation');
             $table->float('stockf');
-            $table->string('statut');
+            $table->string('statut')->default('valide');
             $table->date('datevalidation');
             $table->timestamps();
         });

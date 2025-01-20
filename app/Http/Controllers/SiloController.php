@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Silo;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Exception;
 use GuzzleHttp\Promise\Create;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,7 +31,6 @@ class SiloController extends Controller
             'stocki' => 'required|numeric',
             'entre' => 'required|numeric',
             'consumation' => 'required|numeric',
-            'statut' => 'required|string|max:255',
         ]);
         $validatedData['stockf'] = $request->input('stockf', ($validatedData['stocki'] + $validatedData['entre']) - $validatedData['consumation']);
         $validatedData['datevalidation'] = $request->input('datevalidation', now());
@@ -41,10 +41,31 @@ class SiloController extends Controller
         // Retourne une réponse
         return response()->json([
             'message' => 'Silo ajouté avec succès !',
+            'status' => 'success',
             'silo' => $silo
         ]);
     }
+    public function deleteSilo($id)
+    {
+        try {
+            $silo = Silo::findOrFail($id);
+            $silo->delete();
+            return response()->json(['message' => 'Silo supprimé avec succès !'], 200,);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Erreur : ' . $e->getMessage()], 500);
+        }
+    }
 
+    public function getFilteredData(Request $request)
+    {
+
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
+
+        $data = Silo::whereBetween('datevalidation', [$startDate, $endDate])->get();
+
+        return response()->json($data);
+    }
 
 
     // http://localhost:8000/api/search?search=Blé
@@ -65,7 +86,11 @@ class SiloController extends Controller
             })
             ->get();
 
-        return response()->json($silos);
+        return response()->json([
+            'message' => 'search succès !',
+            'status' => 'success',
+            'silo' => $silos
+        ]);
     }
 
     public function ExporterDATA(Request $request)
@@ -88,7 +113,7 @@ class SiloController extends Controller
             ];
         }
 
-        // Exécution de la requête avec les paramètres
+        // la requête avec les paramètres
         $silos = $sql ? DB::select($sql, $parameters) : [];
 
         // Création du fichier Excel
@@ -98,30 +123,35 @@ class SiloController extends Controller
         // Titre
         $paddingColumns = 1;
         $mergeStart = 'A';
-        $mergeEnd = chr(ord('I') + $paddingColumns);
+        $mergeEnd = chr(ord('G') + $paddingColumns);
         $sheet->mergeCells("{$mergeStart}1:{$mergeEnd}1");
 
-        $sheet->setCellValue('A1', 'Liste des silos');
+        $sheet->setCellValue('A1', 'SUIVI DES FREINTES PREMELANGES');
         $sheet->getStyle("{$mergeStart}1:{$mergeEnd}1")->getFont()->setSize(16);
         $sheet->getStyle("{$mergeStart}1:{$mergeEnd}1")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle("{$mergeStart}1:{$mergeEnd}1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD3D3D3');
+        $sheet->getStyle("{$mergeStart}1:{$mergeEnd}1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF00B050');
+        // Date
+        $sheet->mergeCells('A2:C2');
+        $sheet->setCellValue('A2', 'DATE:' . $startDate . ' jusqu\'à ' . $endDate);
+        $sheet->getStyle('A2:C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+        $sheet->getStyle('A2:C2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD3D3D3');
 
         // En-têtes de colonnes
-        $sheet->setCellValue('A2', 'numsilo');
-        $sheet->setCellValue('B2', 'produit');
-        $sheet->setCellValue('C2', 'stocki');
-        $sheet->setCellValue('D2', 'entre');
-        $sheet->setCellValue('E2', 'consumation');
-        $sheet->setCellValue('F2', 'stockf');
-        $sheet->setCellValue('G2', 'statut');
-        $sheet->setCellValue('H2', 'datevalidation');
+        $sheet->setCellValue('A3', 'N Silo');
+        $sheet->setCellValue('B3', 'Produit');
+        $sheet->setCellValue('C3', 'Stock Initale');
+        $sheet->setCellValue('D3', 'Entre');
+        $sheet->setCellValue('E3', 'Consumation');
+        $sheet->setCellValue('F3', 'Stock Final');
+        $sheet->setCellValue('G3', 'Statut');
+        $sheet->setCellValue('H3', 'Date Creation');
 
-        $sheet->getStyle('A2:H2')->getFont()->setBold(true)->setSize(12);
-        $sheet->getStyle('A2:H2')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFD700');
-        $sheet->getStyle('A2:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A3:H3')->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle('A3:H3')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFD700');
+        $sheet->getStyle('A3:H3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         // Remplir les données
-        $row = 3;
+        $row = 4;
         foreach ($silos as $silo) {
             $sheet->setCellValue("A{$row}", $silo->numsilo);
             $sheet->setCellValue("B{$row}", $silo->produit);
