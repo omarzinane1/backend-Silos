@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\SidebarController;
 use App\Http\Controllers\SiloController;
@@ -21,6 +22,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('register', [AuthController::class, 'register']);
+Route::post('login', [AuthController::class, 'login']);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [AuthController::class, 'logout']);
+    Route::get('me', [AuthController::class, 'me']);
+});
+
 
 Route::get('/silos', [SiloController::class, 'index']);
 Route::post('/store', [SiloController::class, 'store']);
@@ -29,5 +38,5 @@ Route::put('/silos/{id}', [SiloController::class, 'update']);
 Route::delete('/deleteSilo/{id}', [SiloController::class, 'deleteSilo']);
 Route::delete('/silos/{id}', [SiloController::class, 'destroy']);
 Route::get('/filter', [SiloController::class, 'getFilteredData']);
-Route::get('/ExporterDATA',[SiloController::class,'ExporterDATA']);
-Route::get('/exportPDF',[SiloController::class,'exportPDF']);
+Route::get('/ExporterDATA', [SiloController::class, 'ExporterDATA']);
+Route::get('/exportPDF', [SiloController::class, 'exportPDF']);
