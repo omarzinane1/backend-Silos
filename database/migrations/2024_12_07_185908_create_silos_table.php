@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('silos', function (Blueprint $table) {
             $table->id();
-            $table->string('numsilo', 255)->unique();
+            $table->string('numsilo', 255);
             $table->string('produit', 255);
             $table->float('stocki');
             $table->float('entre');

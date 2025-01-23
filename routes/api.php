@@ -1,8 +1,6 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Controller;
-use App\Http\Controllers\SidebarController;
 use App\Http\Controllers\SiloController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,11 +24,11 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth.jwt');
     Route::get('me', [AuthController::class, 'me']);
 });
 
-
+Route::middleware(['role:admin'])->group(function () {});
 Route::get('/silos', [SiloController::class, 'index']);
 Route::post('/store', [SiloController::class, 'store']);
 Route::get('/search', [SiloController::class, 'search']);
@@ -40,3 +38,16 @@ Route::delete('/silos/{id}', [SiloController::class, 'destroy']);
 Route::get('/filter', [SiloController::class, 'getFilteredData']);
 Route::get('/ExporterDATA', [SiloController::class, 'ExporterDATA']);
 Route::get('/exportPDF', [SiloController::class, 'exportPDF']);
+
+
+// Route::middleware(['role:editor'])->group(function () {
+//     Route::get('/silos', [SiloController::class, 'index']);
+//     Route::post('/store', [SiloController::class, 'store']);
+//     Route::get('/search', [SiloController::class, 'search']);
+//     Route::put('/silos/{id}', [SiloController::class, 'update']);
+//     Route::delete('/deleteSilo/{id}', [SiloController::class, 'deleteSilo']);
+//     Route::delete('/silos/{id}', [SiloController::class, 'destroy']);
+//     Route::get('/filter', [SiloController::class, 'getFilteredData']);
+//     Route::get('/ExporterDATA', [SiloController::class, 'ExporterDATA']);
+//     Route::get('/exportPDF', [SiloController::class, 'exportPDF']);
+// });
