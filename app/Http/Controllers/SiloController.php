@@ -21,12 +21,17 @@ class SiloController extends Controller
         $silo = Silo::all();
         return response()->json($silo);
     }
+    public function showUser()
+    {
+        $users = DB::table('users')->where('role','!=','admin')->get();
+        return response()->json($users);
+    }
 
     public function store(Request $request)
     {
         // Validation des données
         $validatedData = $request->validate([
-            'numsilo' => 'required|string|max:255|unique:silos,numsilo',
+            'silo' => 'required|string|max:255',
             'produit' => 'required|string|max:255',
             'stocki' => 'required|numeric',
             'entre' => 'required|numeric',
@@ -56,6 +61,48 @@ class SiloController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'silo' => 'required|string|max:255',
+            'produit' => 'required|string|max:255',
+            'stocki' => 'required|numeric',
+            'entre' => 'required|numeric',
+            'consumation' => 'required|numeric',
+        ]);
+
+        try {
+
+            $silo = Silo::findOrFail($id);
+
+            $silo->numsilo = $validatedData['silo'];
+            $silo->produit = $validatedData['produit'];
+            $silo->stocki = $validatedData['stocki'];
+            $silo->entre = $validatedData['entre'];
+            $silo->consumation = $validatedData['consumation'];
+            // Calcul de stockf
+            $silo->stockf = max(0, ($validatedData['stocki'] + $validatedData['entre']) - $validatedData['consumation']);
+
+            $silo->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Silo mis à jour avec succès.',
+                'data' => $silo,
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Silo non trouvé.',
+            ], 404);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour : ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function getFilteredData(Request $request)
     {
 
@@ -75,7 +122,7 @@ class SiloController extends Controller
 
         $silos = DB::table('silos')
             ->where(function ($query) use ($search) {
-                $query->where('numsilo', 'LIKE', '%' . $search . '%')
+                $query->where('silo', 'LIKE', '%' . $search . '%')
                     ->orWhere('produit', 'LIKE', '%' . $search . '%')
                     ->orWhere('stocki', 'LIKE', '%' . $search . '%')
                     ->orWhere('entre', 'LIKE', '%' . $search . '%')
@@ -153,7 +200,7 @@ class SiloController extends Controller
         // Remplir les données
         $row = 4;
         foreach ($silos as $silo) {
-            $sheet->setCellValue("A{$row}", $silo->numsilo);
+            $sheet->setCellValue("A{$row}", $silo->silo);
             $sheet->setCellValue("B{$row}", $silo->produit);
             $sheet->setCellValue("C{$row}", $silo->stocki);
             $sheet->setCellValue("D{$row}", $silo->entre);

@@ -9,7 +9,7 @@ class Silo extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'numsilo',
+        'silo',
         'produit',
         'stocki',
         'entre',
