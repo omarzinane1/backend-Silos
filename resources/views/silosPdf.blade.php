@@ -48,7 +48,7 @@
         <tbody>
             @foreach ($silos as $silo)
             <tr>
-                <td>{{ $silo->numsilo }}</td>
+                <td>{{ $silo->silo }}</td>
                 <td>{{ $silo->produit }}</td>
                 <td>{{ $silo->stocki }}</td>
                 <td>{{ $silo->entre }}</td>
