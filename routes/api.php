@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SiloController;
+use App\Models\Silo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,14 +31,17 @@ Route::middleware('auth:api')->group(function () {
 
 Route::middleware(['role:admin'])->group(function () {});
 Route::get('/silos', [SiloController::class, 'index']);
+Route::get('/showUser',[SiloController::class, 'showUser']);
+Route::delete('/deleteUser/{id}',[AuthController::class,'deleteUser']);
 Route::post('/store', [SiloController::class, 'store']);
 Route::get('/search', [SiloController::class, 'search']);
-Route::put('/silos/{id}', [SiloController::class, 'update']);
+Route::put('/update/{id}', [SiloController::class, 'update']);
 Route::delete('/deleteSilo/{id}', [SiloController::class, 'deleteSilo']);
 Route::delete('/silos/{id}', [SiloController::class, 'destroy']);
 Route::get('/filter', [SiloController::class, 'getFilteredData']);
 Route::get('/ExporterDATA', [SiloController::class, 'ExporterDATA']);
 Route::get('/exportPDF', [SiloController::class, 'exportPDF']);
+Route::put('/updateRoleByEmail',[AuthController::class,'updateRoleByEmail']);
 
 
 // Route::middleware(['role:editor'])->group(function () {
