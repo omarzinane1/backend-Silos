@@ -75,7 +75,7 @@ class SiloController extends Controller
 
             $silo = Silo::findOrFail($id);
 
-            $silo->numsilo = $validatedData['silo'];
+            $silo->silo = $validatedData['silo'];
             $silo->produit = $validatedData['produit'];
             $silo->stocki = $validatedData['stocki'];
             $silo->entre = $validatedData['entre'];
